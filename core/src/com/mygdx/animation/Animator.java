@@ -16,7 +16,12 @@ public class Animator implements ApplicationListener {
 	// Objects used
 	public Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
 	Texture sheet;
+	Texture background;
 	SpriteBatch batch;
+	TextureRegion bgRegion;
+	int posx = 100;
+	int posy;
+	int posx2;
 
 	// A variable for tracking elapsed time for the animation
 	float stateTime;
@@ -40,6 +45,14 @@ public class Animator implements ApplicationListener {
 		}
 		walkAnimation = new Animation<TextureRegion>(0.100f, walkFrames);
 
+		background = new Texture(Gdx.files.internal("background12.jpg"));
+		background.setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
+		bgRegion = new TextureRegion(background);
+		posx2 = 0;
+		posy = 0;
+		background.setWrap( Texture.TextureWrap.MirroredRepeat,
+							Texture.TextureWrap.MirroredRepeat);
+
 		batch = new SpriteBatch();
 		stateTime = 0f;
 	}
@@ -55,10 +68,22 @@ public class Animator implements ApplicationListener {
 		stateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
 		TextureRegion frame = walkAnimation.getKeyFrame(stateTime,true);
 
+		// (1) CALCULAR
+		//...calculem posx i posy del personatge..
 		batch.begin();
-		batch.draw(frame, 300, 200);
+		// TextureRegion ens permet retallar un fragment de la Texture
+		// retallem el fragment de background des de la posició del personatge (posx, posy)
+		bgRegion.setRegion(posx2,posy,800,600);
+		// (2) PINTAR
+		// primer pintem el background
+		batch.draw(bgRegion,0,0);
+		// ...després pintem altres coses...
 		// si volem invertir el sentit, ho podem fer amb el paràmetre scaleX=-1
 		//batch.draw(frame, 200, 100, 0, frame.getRegionWidth(),frame.getRegionHeight(),-1,1,0);
+		posx2 += 2;
+		batch.draw(frame, posx, 90);
+
+		// finalitzem main loop
 		batch.end();
 	}
 
